@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: fast-api
-        image: swoodward90/plrl-cd-test:0.0.1
+        image: docker.io/swoodward90/plrl-cd-test:0.0.1
         ports:
         - containerPort: 80
         resources:
