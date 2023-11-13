@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       PLURAL_CONSOLE_TOKEN: ${{ secrets.CONSOLE_TOKEN }}
-      PLURAL_CONSOLE_URL: ${{ secrets.PLURAL_CONSOLE_URL }}
+      PLURAL_CONSOLE_URL: ${{ secrets.CONSOLE_URL }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
