@@ -17,11 +17,13 @@ You can see the basic kubernetes manifests to make this work in `/kubernetes`.  
 
 ## Update on Docker Push
 
-To deploy a new image for this service, see the github action in [push.yaml](.github/workflows/push.yaml).  This action has two phases, but you likely would also want to run some unit tests and some other things in your own github actions.
+To deploy a new image for this service, see the github action in [push.yaml](.github/workflows/push.yaml).  This implements a pretty common process for releasing a build artifact: unit test -> docker build -> deploy.
 
-The first job in the workflow uses the docker metadata action to generate a set of tags, then buildx to build, tag and push the image to ghcr.  You can see all the built images easily [here](https://github.com/pluralsh/plrl-cd-test/pkgs/container/plrl-cd-test).  We use ghcr for convenience but you can easily leverage any other docker registry, and most cloud's kubernetes distros natively integrate w/ their own registries so it's worth considering them as options.
+The first job in the workflow basically just sets up python and runs a trivial pytest for demo purposes.  You'll likely have a much more complex test harness for a more mature application.
 
-The second job configures the `plural` cli using the `pluralsh/setup-plural` action then runs `plural cd services update` to reconfigure and redeploy the service.  In particular the syntax is:
+The second job in the workflow uses the docker metadata action to generate a set of tags, then buildx to build, tag and push the image to ghcr.  You can see all the built images easily [here](https://github.com/pluralsh/plrl-cd-test/pkgs/container/plrl-cd-test).  We use ghcr for convenience but you can easily leverage any other docker registry, and most cloud's kubernetes distros natively integrate w/ their own registries so it's worth considering them as options.
+
+The final job configures the `plural` cli using the `pluralsh/setup-plural` action then runs `plural cd services update` to reconfigure and redeploy the service.  In particular the syntax is:
 
 ```sh
 plural cd services update @<cluster-handle>/<service-name> --conf <var>=<value> (...can add more configuration updates as needed)

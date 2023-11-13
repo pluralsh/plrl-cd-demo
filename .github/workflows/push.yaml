@@ -8,8 +8,27 @@ on:
     - main
 
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Test with pytest
+      run: |
+        pip install pytest
+        pytest
   publish-docker:
     name: Build and Push fastapi container
+    needs: test
     runs-on: ubuntu-20.04
     permissions:
       contents: 'read'
