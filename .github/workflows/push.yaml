@@ -7,13 +7,9 @@ on:
     branches:
     - main
 
-env:
-  GOPATH: /home/runner/go/
-  GOPROXY: "https://proxy.golang.org"
-
 jobs:
   publish-docker:
-    name: Build and push agent container
+    name: Build and Push fastapi container
     runs-on: ubuntu-20.04
     permissions:
       contents: 'read'
@@ -33,6 +29,9 @@ jobs:
           ghcr.io/pluralsh/plrl-cd-test
         # generate Docker tags based on the following events/attributes
         tags: |
+          type=sha
+          type=ref,event=pr
+          type=ref,event=branch
           type=semver,pattern={{version}}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
