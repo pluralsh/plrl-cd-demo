@@ -1,6 +1,9 @@
 # 
 FROM python:3.9
 
+ARG GIT_COMMIT=changeme
+ENV GIT_COMMIT=$GIT_COMMIT
+
 # 
 WORKDIR /code
 

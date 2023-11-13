@@ -6,4 +6,4 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello": f"From: {os.environ.get('ENV', 'DEFAULT_ENV')}"}
+    return {"Hello": f"From: {os.environ.get('ENV', 'DEFAULT_ENV')}, Commit: {os.environ.get("GIT_COMMIT")}"}
