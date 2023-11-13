@@ -56,3 +56,16 @@ jobs:
         cache-to: type=gha,mode=max
         build-args: |
           GIT_COMMIT=${{ github.sha }}
+  update-service:
+    needs: [publish-docker]
+    runs-on: ubuntu-20.04
+    env:
+      PLURAL_CONSOLE_TOKEN: ${{ secrets.CONSOLE_TOKEN }}
+      PLURAL_CONSOLE_URL: ${{ secrets.PLURAL_CONSOLE_URL }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: installing plural
+      uses: pluralsh/setup-plural@v0.2.0
+    - name: Update service
+      run:  plural cd services update @cd-demo-workload-1/cd-test --conf tag=sha-$(git rev-parse --short HEAD)
