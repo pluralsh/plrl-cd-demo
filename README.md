@@ -31,6 +31,8 @@ plural cd services update @<cluster-handle>/<service-name> --conf <var>=<value> 
 
 This basically modifies the configuration (in our case for the variable `tag`) against the service, and eventually (usually <1m) its cluster's deploy agent will detect and deploy that change.
 
+This is not the only way you can accomplish this task, just a demonstration of a relatively simple pattern.  You could opt for a full-bore GitOps approach and have PRs specify the tag on each releasable version for instance, in which case you'd drop the service templating.
+
 ## Configure a release pipeline
 
 You can create multiple stages of this service into a single release pipeline using our pipeline system. This allows you to sequentially release your code across dev, staging and production environments, with controlled promotion workflows along the way.  The spec for a pipeline can be seen in [pipeline.yaml](pipeline.yaml).
