@@ -1,0 +1,15 @@
+name: cd-test
+stages:
+- name: dev
+  services:
+  - name: cd-demo-workload-1/cd-test
+- name: prod
+  services:
+  - name: cd-demo/cd-test
+    criteria:
+      source: cd-demo-workload-1/cd-test
+      secrets:
+      - tag
+edges:
+- from: dev
+  to: prod
