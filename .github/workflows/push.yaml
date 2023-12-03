@@ -87,4 +87,4 @@ jobs:
     - name: installing plural
       uses: pluralsh/setup-plural@v0.2.0
     - name: Update service
-      run:  plural cd services update @cd-demo-workload-1/cd-test --conf tag=sha-${GITHUB_SHA::7}
+      run:  plural cd services update @linode/cd-test --conf tag=sha-${GITHUB_SHA::7}
