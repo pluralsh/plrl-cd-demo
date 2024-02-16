@@ -1,0 +1,27 @@
+# TODO: change to your own cluster name
+#apiVersion: deployments.plural.sh/v1alpha1
+#kind: Cluster
+#metadata:
+#  name: byok-workload
+#  namespace: infra
+#spec:
+#  handle: byok-workload
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: prometheus-community
+  namespace: infra
+spec:
+  interval: 5m0s
+  url: https://prometheus-community.github.io/helm-charts
+---
+# this should be already included on the demo cluster, but we reference it here for the sake referencing the helm values file
+apiVersion: deployments.plural.sh/v1alpha1
+kind: GitRepository
+metadata:
+  name: cd-demo
+  namespace: infra
+spec:
+  url: https://github.com/pluralsh/plrl-cd-demo.git
+
