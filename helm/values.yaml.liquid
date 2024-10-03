@@ -10,12 +10,7 @@ ingress:
     - host: cd-demo.{{ cluster.metadata.dns_zone }}
       paths:
         - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: cd-demo
-              port:
-                number: 80
+          pathType: ImplementationSpecific
   tls:
   - secretName: cd-demo-tls
     hosts:
