@@ -7,11 +7,11 @@ ingress:
   annotations: 
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-    - host: cd-demo.{{ cluster.metadata.dns_zone }}
+    - host: cd-demo-{{ cluster.handle }}.{{ cluster.metadata.dns_zone }}
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls:
   - secretName: cd-demo-tls
     hosts:
-      - cd-demo.{{ cluster.metadata.dns_zone }}
+      - cd-demo-{{ cluster.handle }}.{{ cluster.metadata.dns_zone }}
