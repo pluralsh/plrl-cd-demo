@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 import prometheus_client as prom
-import time
-
 import os
 
 app = FastAPI()
@@ -12,14 +10,12 @@ prom.start_http_server(9090)
 
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
-  return {"pong": True}
+    # Removed the condition that raises an exception
+    return {"pong": True}
 
 @app.get("/")
 def read_root():
     return {
-      "Commit": os.environ.get('GIT_COMMIT'),
-      "From": os.environ.get('ENV', 'DEFAULT_ENV'),
+        "Commit": os.environ.get('GIT_COMMIT'),
+        "From": os.environ.get('ENV', 'DEFAULT_ENV'),
     }
