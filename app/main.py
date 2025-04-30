@@ -17,6 +17,10 @@ def test():
 
   return {"pong": True}
 
+@app.get("/hello")
+def hello():
+  return {"hello": "world!"}
+
 @app.get("/")
 def read_root():
     return {

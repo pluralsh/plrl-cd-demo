@@ -6,11 +6,17 @@ on:
     - 'v*.*.*'
     branches:
     - main
+  pull_request:
+    branches:
+    - main
+
+env:
+  DOCKER_METADATA_PR_HEAD_SHA: 'true'
 
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -29,7 +35,7 @@ jobs:
   publish-docker:
     name: Build and Push fastapi container
     needs: test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
