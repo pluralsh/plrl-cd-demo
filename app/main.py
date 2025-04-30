@@ -12,8 +12,9 @@ prom.start_http_server(9090)
 
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
+  # Removed intentional 500 errors to prevent alert firing
+  # if int(time.time()) % 3 == 0:
+  #   raise Exception("unknown internal error")
 
   return {"pong": True}
 
