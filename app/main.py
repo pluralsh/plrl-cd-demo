@@ -21,6 +21,10 @@ def test():
 def hello():
   return {"hello": "world!"}
 
+@app.get("/time")
+def time():
+  return {"time": time.time()}
+
 @app.get("/")
 def read_root():
     return {
