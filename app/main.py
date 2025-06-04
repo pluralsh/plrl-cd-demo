@@ -12,18 +12,12 @@ prom.start_http_server(9090)
 
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
-  return {"pong": True}
+    # Removed deliberate exception to prevent 500 errors
+    return {"pong": True}
 
 @app.get("/hello")
 def hello():
   return {"hello": "world!"}
-
-@app.get("/world")
-def world():
-  return {"world": "hello!"}
 
 @app.get("/")
 def read_root():
@@ -31,3 +25,4 @@ def read_root():
       "Commit": os.environ.get('GIT_COMMIT'),
       "From": os.environ.get('ENV', 'DEFAULT_ENV'),
     }
+
