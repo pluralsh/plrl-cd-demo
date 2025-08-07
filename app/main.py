@@ -10,24 +10,25 @@ Instrumentator().instrument(app)
 
 prom.start_http_server(9090)
 
+ERRORS_ENABLED = os.environ.get("ENABLE_PING_ERRORS", "false").lower() == "true"
+
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
-  return {"pong": True}
+    if ERRORS_ENABLED and int(time.time()) % 3 == 0:
+        raise Exception("unknown internal error")
+    return {"pong": True}
 
 @app.get("/hello")
 def hello():
-  return {"hello": "world!"}
+    return {"hello": "world!"}
 
 @app.get("/world")
 def world():
-  return {"world": "hello!"}
+    return {"world": "hello!"}
 
 @app.get("/")
 def read_root():
     return {
-      "Commit": os.environ.get('GIT_COMMIT'),
-      "From": os.environ.get('ENV', 'DEFAULT_ENV'),
+        "Commit": os.environ.get('GIT_COMMIT'),
+        "From": os.environ.get('ENV', 'DEFAULT_ENV'),
     }
