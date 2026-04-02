@@ -106,3 +106,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Chaos testing configuration
+chaos:
+  # Enable chaos/failure injection for /ping endpoint
+  # When enabled, /ping will randomly return 500 errors (~33% of requests)
+  # Default: false (disabled to prevent alert noise)
+  enabled: false
