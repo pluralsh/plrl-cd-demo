@@ -4,6 +4,11 @@
 
 replicaCount: 1
 
+# Chaos mode configuration
+# When enabled, the /ping endpoint will intermittently return 500 errors
+# for chaos testing purposes. When disabled (default), /ping always returns 200.
+chaosMode: false
+
 image:
   repository: ghcr.io/pluralsh/plrl-cd-test
   pullPolicy: IfNotPresent

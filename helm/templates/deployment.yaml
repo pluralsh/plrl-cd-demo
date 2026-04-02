@@ -36,6 +36,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CHAOS_MODE
+              value: {{ .Values.chaosMode | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
