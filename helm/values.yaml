@@ -43,6 +43,35 @@ service:
   type: ClusterIP
   port: 80
 
+# -- Prometheus metrics configuration
+# The application exposes metrics on a separate port (9090) via prometheus_client
+metrics:
+  # -- Enable metrics port exposure in Deployment and Service
+  enabled: true
+  # -- Port number for the metrics endpoint
+  port: 9090
+
+# -- ServiceMonitor configuration for Prometheus Operator
+# Requires metrics.enabled to be true
+serviceMonitor:
+  # -- Enable ServiceMonitor resource creation
+  enabled: false
+  # -- Scrape interval (e.g., "30s", "1m")
+  interval: "30s"
+  # -- Scrape timeout (must be less than interval)
+  scrapeTimeout: "10s"
+  # -- Path to scrape metrics from
+  path: "/metrics"
+  # -- Additional labels to add to the ServiceMonitor
+  additionalLabels: {}
+  # -- Namespace selector for the ServiceMonitor
+  # If empty, only the release namespace is monitored
+  namespaceSelector: {}
+  # -- Relabeling configs for the endpoint
+  relabelings: []
+  # -- Metric relabeling configs for the endpoint
+  metricRelabelings: []
+
 ingress:
   enabled: true
   className: nginx

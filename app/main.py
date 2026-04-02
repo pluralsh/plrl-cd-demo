@@ -11,11 +11,13 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 @app.get("/ping")
-def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
-  return {"pong": True}
+def ping():
+  """Health check endpoint - always returns HTTP 200 for liveness/readiness probes."""
+  return {
+    "status": "ok",
+    "pong": True,
+    "timestamp": int(time.time())
+  }
 
 @app.get("/hello")
 def hello():
