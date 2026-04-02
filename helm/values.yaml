@@ -39,6 +39,14 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# Environment variables for the application container
+env:
+  # CHAOS_MODE: Controls whether /ping endpoint exhibits chaotic behavior (intermittent 5xx).
+  # Set to "true" or "1" to enable chaos mode. Default is "false" (stable /ping).
+  # When false/unset, /ping always returns 200 OK with {"pong": true}.
+  # When true, /ping intermittently raises 500 errors (every ~3 seconds).
+  CHAOS_MODE: "false"
+
 service:
   type: ClusterIP
   port: 80

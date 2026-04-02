@@ -10,12 +10,37 @@ Instrumentator().instrument(app)
 
 prom.start_http_server(9090)
 
-@app.get("/ping")
-def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
 
-  return {"pong": True}
+def is_chaos_mode_enabled() -> bool:
+    """Check if CHAOS_MODE is enabled via environment variable.
+
+    Returns True if CHAOS_MODE is set to 'true' or '1' (case-insensitive).
+    Returns False by default (stable behavior).
+    """
+    chaos_value = os.environ.get('CHAOS_MODE', '').lower()
+    return chaos_value in ('true', '1')
+
+
+def should_trigger_chaos_error(timestamp: int) -> bool:
+    """Determine if chaos error should be triggered based on timestamp.
+
+    This is a pure function to allow deterministic testing.
+    """
+    return timestamp % 3 == 0
+
+
+@app.get("/ping")
+def ping():
+    """Health check endpoint.
+
+    By default, returns stable 200 OK response.
+    When CHAOS_MODE=true, intermittently raises 5xx errors (every 3rd second).
+    """
+    if is_chaos_mode_enabled():
+        if should_trigger_chaos_error(int(time.time())):
+            raise Exception("unknown internal error")
+
+    return {"pong": True}
 
 @app.get("/hello")
 def hello():
