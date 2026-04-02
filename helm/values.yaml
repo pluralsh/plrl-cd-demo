@@ -106,3 +106,13 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Environment variables for the container
+# PING_FAIL_ENABLED controls intentional /ping endpoint failures (for demo/chaos testing)
+# Set to "true" to enable failure injection, "false" (default) for stable 200 responses
+env:
+  - name: PING_FAIL_ENABLED
+    value: "false"
+  # Optional: Uncomment to customize failure rate (default 33%)
+  # - name: PING_FAIL_RATE
+  #   value: "33"
