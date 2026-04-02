@@ -1,9 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 import prometheus_client as prom
-import time
-
+import logging
 import os
+
+# Configure structured logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 Instrumentator().instrument(app)
@@ -11,11 +18,22 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 @app.get("/ping")
-def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
+def ping(request: Request):
+    """
+    Health check endpoint that always returns HTTP 200 with {"pong": true}.
+    Used for monitoring and alerting.
+    """
+    logger.info(f"method={request.method} path={request.url.path} status=200")
+    return JSONResponse(content={"pong": True}, status_code=200)
 
-  return {"pong": True}
+
+@app.get("/healthz")
+def healthz():
+    """
+    Liveness/readiness probe endpoint. Always returns HTTP 200.
+    Minimal logging to reduce noise from frequent probe calls.
+    """
+    return JSONResponse(content={"status": "healthy"}, status_code=200)
 
 @app.get("/hello")
 def hello():

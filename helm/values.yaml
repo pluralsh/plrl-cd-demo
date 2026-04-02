@@ -106,3 +106,21 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Pinger sidecar configuration
+# The pinger sidecar periodically calls an endpoint to verify connectivity.
+# Disabled by default to reduce alert noise from monitoring systems.
+pinger:
+  enabled: false
+  image: curlimages/curl:8.5.0
+  # Endpoint to ping - use /healthz for guaranteed 200 responses
+  endpoint: /healthz
+  # Interval between pings in seconds
+  intervalSeconds: 10
+  resources:
+    limits:
+      cpu: 10m
+      memory: 16Mi
+    requests:
+      cpu: 5m
+      memory: 8Mi

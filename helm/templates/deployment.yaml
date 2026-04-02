@@ -50,6 +50,20 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{- if .Values.pinger.enabled }}
+        - name: pinger
+          image: {{ .Values.pinger.image }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              while true; do
+                curl -sf http://localhost:{{ .Values.service.port }}{{ .Values.pinger.endpoint }} || echo "ping failed"
+                sleep {{ .Values.pinger.intervalSeconds }}
+              done
+          resources:
+            {{- toYaml .Values.pinger.resources | nindent 12 }}
+        {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
