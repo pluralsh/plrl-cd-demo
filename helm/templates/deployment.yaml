@@ -46,10 +46,30 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{- if .Values.pinger.enabled }}
+        - name: pinger
+          image: "{{ .Values.pinger.image.repository }}:{{ .Values.pinger.image.tag }}"
+          imagePullPolicy: {{ .Values.pinger.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              while true; do
+                curl -sS -o /dev/null -w 'url=%{url_effective} code=%{http_code} time_total=%{time_total}s\n' \
+                  "http://localhost:{{ .Values.service.port }}{{ .Values.pinger.endpoint }}"
+                sleep {{ .Values.pinger.intervalSeconds }}
+              done
+          resources:
+            {{- toYaml .Values.pinger.resources | nindent 12 }}
+        {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}

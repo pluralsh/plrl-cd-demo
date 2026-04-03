@@ -106,3 +106,29 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Environment variables for the main container
+# Fault injection is disabled by default for stable operation
+env:
+  - name: FAULT_INJECT_PING
+    value: "false"
+  - name: FAULT_INJECT_RATE
+    value: "0"
+
+# Pinger sidecar configuration
+# Sends periodic requests to the /ping endpoint and logs results
+pinger:
+  enabled: true
+  image:
+    repository: curlimages/curl
+    tag: "8.5.0"
+    pullPolicy: IfNotPresent
+  endpoint: /ping
+  intervalSeconds: 5
+  resources:
+    limits:
+      cpu: 50m
+      memory: 32Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
