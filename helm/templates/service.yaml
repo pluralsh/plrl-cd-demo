@@ -11,5 +11,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.metrics.port | default 9090 }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     {{- include "cd-demo.selectorLabels" . | nindent 4 }}
