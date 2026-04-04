@@ -74,12 +74,18 @@ resources: {}
 
 livenessProbe:
   httpGet:
-    path: /
+    path: /healthz
     port: http
 readinessProbe:
   httpGet:
-    path: /
+    path: /healthz
     port: http
+startupProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  failureThreshold: 30
+  periodSeconds: 10
 
 autoscaling:
   enabled: false
@@ -106,3 +112,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Chaos testing configuration
+# When enabled, /ping endpoint will randomly fail for chaos testing purposes
+chaosMode:
+  enabled: false
