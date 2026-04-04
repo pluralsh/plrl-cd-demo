@@ -43,6 +43,31 @@ service:
   type: ClusterIP
   port: 80
 
+# Metrics configuration
+metrics:
+  # Port for Prometheus metrics endpoint
+  port: 9090
+  # Port name used in Service and ServiceMonitor/VMServiceScrape
+  portName: metrics
+  # Path to scrape metrics from
+  path: /metrics
+  # Scrape interval
+  interval: 30s
+  # Scrape timeout (optional)
+  scrapeTimeout: 10s
+
+  # VictoriaMetrics VMServiceScrape (enabled by default for demo)
+  vmServiceScrape:
+    enabled: true
+    # Additional labels for VMServiceScrape
+    labels: {}
+
+  # Prometheus Operator ServiceMonitor (disabled by default)
+  serviceMonitor:
+    enabled: false
+    # Additional labels for ServiceMonitor
+    labels: {}
+
 ingress:
   enabled: true
   className: nginx

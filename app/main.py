@@ -2,20 +2,38 @@ from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 import prometheus_client as prom
 import time
-
+import logging
 import os
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 Instrumentator().instrument(app)
 
 prom.start_http_server(9090)
 
+
+def is_chaos_enabled() -> bool:
+    """Check if chaos testing is enabled via environment variable.
+
+    Evaluates per-request to allow dynamic toggling.
+    Only returns True if ENABLE_CHAOS_TESTING is exactly 'true' (case-insensitive).
+    """
+    return os.getenv("ENABLE_CHAOS_TESTING", "").lower() == "true"
+
+
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
-  return {"pong": True}
+    try:
+        if is_chaos_enabled():
+            if int(time.time()) % 3 == 0:
+                raise Exception("chaos testing: simulated internal error")
+        return {"pong": True}
+    except Exception as e:
+        logger.exception("Exception in /ping handler: %s", str(e))
+        raise
 
 @app.get("/hello")
 def hello():
