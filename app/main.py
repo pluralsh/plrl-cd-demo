@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 import prometheus_client as prom
-import time
 
 import os
 
@@ -11,10 +10,8 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 @app.get("/ping")
-def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
+def ping():
+  """Health check endpoint - returns a simple pong response."""
   return {"pong": True}
 
 @app.get("/hello")
