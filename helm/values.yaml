@@ -106,3 +106,15 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Chaos engineering configuration
+chaos:
+  # Enable chaos behavior on /ping-chaos endpoint
+  enabled: true
+
+# Alert configuration for external Prometheus/Grafana rules
+alerts:
+  # Enable 5xx alerts for /ping endpoint (should not trigger since /ping is now stable)
+  ping5xxEnabled: true
+  # Enable 5xx alerts for /ping-chaos endpoint (disabled by default to avoid production alerts)
+  chaosPing5xxEnabled: false

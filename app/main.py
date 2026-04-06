@@ -11,11 +11,19 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 @app.get("/ping")
-def test():
-  if int(time.time()) % 3 == 0:
+def ping():
+  """Health check endpoint - always returns 200 OK"""
+  return {"ok": True}
+
+@app.get("/ping-chaos")
+def ping_chaos():
+  """Demo chaos endpoint - intentionally fails based on CHAOS_ENABLED env var"""
+  chaos_enabled = os.environ.get('CHAOS_ENABLED', 'true').lower() == 'true'
+
+  if chaos_enabled and int(time.time()) % 3 == 0:
     raise Exception("unknown internal error")
 
-  return {"pong": True}
+  return {"ok": True, "chaos": chaos_enabled}
 
 @app.get("/hello")
 def hello():
