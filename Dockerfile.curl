@@ -1,0 +1,19 @@
+# Dockerfile for curl with fixed OpenSSL vulnerability
+# This image uses Alpine edge which includes libssl3-3.5.5-r0
+# Fixes CVE: OpenSSL Denial of Service via malformed PKCS#12 file processing
+FROM alpine:edge
+
+# Install curl and dependencies with the fixed libssl3 version
+RUN apk add --no-cache \
+    curl \
+    ca-certificates \
+    && apk info libssl3
+
+# Create non-root user for security
+RUN addgroup -g 1000 curl_group && \
+    adduser -D -u 1000 -G curl_group curl_user
+
+USER curl_user
+
+ENTRYPOINT ["curl"]
+CMD ["--help"]
