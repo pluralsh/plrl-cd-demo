@@ -106,3 +106,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Environment variables for the application
+env:
+  # Controls ping endpoint failure rate
+  # Set to 0 or omit to disable intentional failures (recommended for production)
+  # Set to N>0 to fail every Nth request (for testing/demo purposes)
+  PING_FAILURE_MODULO: "0"
