@@ -106,3 +106,54 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Grafana configuration
+grafana:
+  enabled: true
+  image:
+    repository: grafana/grafana
+    tag: "10.4.0"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  # Storage for Grafana data
+  # Size has been DOUBLED from typical 10Gi to 20Gi
+  storage:
+    size: 20Gi
+    storageClassName: ""
+
+  # Database configuration
+  database:
+    type: postgres  # Can be: sqlite, postgres, mysql
+    name: grafana
+    user: grafana
+    password: "changeme-grafana-password"
+
+    # PostgreSQL database configuration
+    # Database size has been DOUBLED from typical 10Gi to 20Gi
+    postgres:
+      image:
+        repository: postgres
+        tag: "16-alpine"
+        pullPolicy: IfNotPresent
+      storage:
+        size: 20Gi
+        storageClassName: ""
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

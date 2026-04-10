@@ -1,0 +1,100 @@
+{{- if .Values.grafana.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "cd-demo.fullname" . }}-grafana
+  labels:
+    {{- include "cd-demo.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+spec:
+  serviceName: {{ include "cd-demo.fullname" . }}-grafana
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "cd-demo.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: grafana
+  template:
+    metadata:
+      labels:
+        {{- include "cd-demo.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"
+        imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+        ports:
+        - name: grafana
+          containerPort: 3000
+          protocol: TCP
+        env:
+        - name: GF_DATABASE_TYPE
+          value: {{ .Values.grafana.database.type | quote }}
+        {{- if eq .Values.grafana.database.type "postgres" }}
+        - name: GF_DATABASE_HOST
+          value: "localhost:5432"
+        - name: GF_DATABASE_NAME
+          value: {{ .Values.grafana.database.name | quote }}
+        - name: GF_DATABASE_USER
+          value: {{ .Values.grafana.database.user | quote }}
+        - name: GF_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "cd-demo.fullname" . }}-grafana-db
+              key: password
+        {{- end }}
+        volumeMounts:
+        - name: grafana-data
+          mountPath: /var/lib/grafana
+        resources:
+          {{- toYaml .Values.grafana.resources | nindent 10 }}
+      {{- if eq .Values.grafana.database.type "postgres" }}
+      - name: postgres
+        image: "{{ .Values.grafana.database.postgres.image.repository }}:{{ .Values.grafana.database.postgres.image.tag }}"
+        imagePullPolicy: {{ .Values.grafana.database.postgres.image.pullPolicy }}
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.grafana.database.name | quote }}
+        - name: POSTGRES_USER
+          value: {{ .Values.grafana.database.user | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "cd-demo.fullname" . }}-grafana-db
+              key: password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          {{- toYaml .Values.grafana.database.postgres.resources | nindent 10 }}
+      {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: grafana-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      {{- if .Values.grafana.storage.storageClassName }}
+      storageClassName: {{ .Values.grafana.storage.storageClassName | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.grafana.storage.size | quote }}
+  {{- if eq .Values.grafana.database.type "postgres" }}
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      {{- if .Values.grafana.database.postgres.storage.storageClassName }}
+      storageClassName: {{ .Values.grafana.database.postgres.storage.storageClassName | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.grafana.database.postgres.storage.size | quote }}
+  {{- end }}
+{{- end }}
