@@ -25,6 +25,10 @@ def hello():
 def world():
   return {"world": "hello!"}
 
+@app.get("/user")
+def user():
+  return{"user:": "bob"}
+
 @app.get("/")
 def read_root():
     return {
