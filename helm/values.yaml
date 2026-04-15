@@ -43,6 +43,12 @@ service:
   type: ClusterIP
   port: 80
 
+# Environment variables for the application
+env:
+  # Disable demo failures by default for production safety
+  # Set to "true" only in non-production environments to test failure scenarios
+  ENABLE_DEMO_FAILURES: "false"
+
 ingress:
   enabled: true
   className: nginx
