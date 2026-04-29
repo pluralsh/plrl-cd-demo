@@ -1,14 +1,11 @@
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
-import prometheus_client as prom
 import time
 
 import os
 
 app = FastAPI()
-Instrumentator().instrument(app)
-
-prom.start_http_server(9090)
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/ping")
 def test():
