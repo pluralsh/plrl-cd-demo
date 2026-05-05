@@ -29,6 +29,13 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext: {}
+
+# Environment variables for the application
+env:
+  # Enable chaos mode for /ping endpoint (intentional failures for testing)
+  # Set to "true" to enable intermittent 500 errors on /ping (demo/testing only)
+  # Default: "false" (stable, production-safe behavior)
+  ENABLE_PING_CHAOS: "false"
   # fsGroup: 2000
 
 securityContext: {}
