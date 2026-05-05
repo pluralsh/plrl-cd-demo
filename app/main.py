@@ -12,7 +12,10 @@ prom.start_http_server(9090)
 
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
+  # Chaos mode is opt-in via ENABLE_PING_CHAOS environment variable
+  enable_chaos = os.environ.get('ENABLE_PING_CHAOS', 'false').lower() in ('true', '1', 'yes')
+
+  if enable_chaos and int(time.time()) % 3 == 0:
     raise Exception("unknown internal error")
 
   return {"pong": True}
