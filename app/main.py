@@ -11,11 +11,13 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 @app.get("/ping")
-def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
-
-  return {"pong": True}
+def health_check():
+  """Health check endpoint for monitoring and load balancers"""
+  return {
+    "status": "healthy",
+    "service": "flow-test-stateless",
+    "timestamp": int(time.time())
+  }
 
 @app.get("/hello")
 def hello():
