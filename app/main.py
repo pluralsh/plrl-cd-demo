@@ -12,8 +12,11 @@ prom.start_http_server(9090)
 
 @app.get("/ping")
 def test():
-  if int(time.time()) % 3 == 0:
-    raise Exception("unknown internal error")
+  # Demo failure injection - disabled by default
+  # Set ENABLE_DEMO_FAILURES=true to enable time-based failures for AI remediation demos
+  if os.environ.get('ENABLE_DEMO_FAILURES', '').lower() == 'true':
+    if int(time.time()) % 3 == 0:
+      raise Exception("unknown internal error")
 
   return {"pong": True}
 
