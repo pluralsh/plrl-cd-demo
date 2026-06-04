@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from typing import Optional
 import prometheus_client as prom
 import time
 import os
@@ -19,7 +20,7 @@ init_db()
 
 class ItemPayload(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
 
 
 def db_required(db: Session = Depends(get_db)):
