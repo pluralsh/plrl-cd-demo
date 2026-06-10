@@ -1,12 +1,12 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
-import prometheus_client as prom
-import time
 import os
+
+import prometheus_client as prom
 
 from .database import init_db, get_db, Item, POSTGRES_URL
 
@@ -30,9 +30,7 @@ def db_required(db: Session = Depends(get_db)):
 
 
 @app.get("/ping")
-def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
+def ping():
     return {"pong": True}
 
 
