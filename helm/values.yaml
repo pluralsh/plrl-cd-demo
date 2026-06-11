@@ -28,6 +28,11 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
+# Leave /ping healthy by default. Set PING_FAILURE_MODE=demo only for intentional alerting demos.
+env: []
+# - name: PING_FAILURE_MODE
+#   value: demo
+
 podSecurityContext: {}
   # fsGroup: 2000
 

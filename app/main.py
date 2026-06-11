@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 import prometheus_client as prom
-import time
 import os
 
 from .database import init_db, get_db, Item, POSTGRES_URL
@@ -16,6 +15,9 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 init_db()
+
+PING_FAILURE_MODE_ENV = "PING_FAILURE_MODE"
+PING_FAILURE_MODE_DEMO = "demo"
 
 
 class ItemPayload(BaseModel):
@@ -29,10 +31,14 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def ping_failure_mode_enabled() -> bool:
+    return os.getenv(PING_FAILURE_MODE_ENV, "").strip().lower() == PING_FAILURE_MODE_DEMO
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
+    if ping_failure_mode_enabled():
+        raise HTTPException(status_code=500, detail="intentional demo failure mode enabled")
     return {"pong": True}
 
 
