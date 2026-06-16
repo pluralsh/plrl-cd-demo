@@ -8,6 +8,7 @@ import prometheus_client as prom
 import time
 import os
 
+
 from .database import init_db, get_db, Item, POSTGRES_URL
 
 app = FastAPI()
@@ -16,6 +17,8 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 init_db()
+
+ENABLE_PING_CHAOS = os.getenv("ENABLE_PING_CHAOS", "false").lower() in {"1", "true", "yes", "on"}
 
 
 class ItemPayload(BaseModel):
@@ -31,7 +34,7 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if ENABLE_PING_CHAOS and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
