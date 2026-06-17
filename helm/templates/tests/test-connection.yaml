@@ -8,8 +8,13 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['{{ include "cd-demo.fullname" . }}:{{ .Values.service.port }}']
+    - name: curl
+      # Using Alpine edge which includes libssl3-3.5.5-r0 (fixes OpenSSL PKCS#12 DoS vulnerability)
+      # This addresses the security vulnerability in libssl3-3.5.4-r0
+      image: alpine:edge
+      command: ['sh', '-c']
+      args:
+        - |
+          apk add --no-cache curl > /dev/null 2>&1
+          curl -f http://{{ include "cd-demo.fullname" . }}:{{ .Values.service.port }} || exit 1
   restartPolicy: Never
