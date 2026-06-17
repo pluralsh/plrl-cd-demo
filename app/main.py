@@ -36,6 +36,10 @@ def test():
     return {"pong": True}
 
 
+@app.get("/healthz")
+def healthz():
+  return {"status": "ok"}
+
 @app.get("/hello")
 def hello():
     return {"hello": "world!"}
