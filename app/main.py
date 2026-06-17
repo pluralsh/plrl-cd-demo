@@ -29,11 +29,20 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def demo_failure_enabled() -> bool:
+    return os.environ.get("ENABLE_PING_FAILURE_DEMO", "true").lower() == "true"
+
+
 @app.get("/ping")
-def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
+def ping():
     return {"pong": True}
+
+
+@app.get("/ping/fail")
+def ping_fail():
+    if demo_failure_enabled() and int(time.time()) % 3 == 0:
+        raise Exception("unknown internal error")
+    return {"pong": True, "demo": "failure disabled or not triggered"}
 
 
 @app.get("/hello")
