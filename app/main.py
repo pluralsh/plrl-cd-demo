@@ -23,6 +23,14 @@ class ItemPayload(BaseModel):
     description: Optional[str] = None
 
 
+FAIL_PING_FOR_DEMO = os.environ.get("FAIL_PING_FOR_DEMO", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+
+
 def db_required(db: Session = Depends(get_db)):
     if db is None:
         raise HTTPException(status_code=503, detail="Database not configured (POSTGRES_URL not set)")
@@ -31,7 +39,7 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if FAIL_PING_FOR_DEMO and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
