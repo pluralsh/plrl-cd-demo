@@ -31,7 +31,9 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if os.environ.get("PING_FAIL_MODE") == "always":
+        raise Exception("unknown internal error")
+    if os.environ.get("PING_FAIL_MODE") == "mod3" and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
