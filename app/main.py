@@ -10,6 +10,8 @@ import os
 
 from .database import init_db, get_db, Item, POSTGRES_URL
 
+ENABLE_PING_FAULT_INJECTION = "ENABLE_PING_FAULT_INJECTION"
+
 app = FastAPI()
 Instrumentator().instrument(app)
 
@@ -29,9 +31,13 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def ping_fault_injection_enabled() -> bool:
+    return os.getenv(ENABLE_PING_FAULT_INJECTION, "").lower() in {"1", "true", "yes", "on"}
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if ping_fault_injection_enabled() and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
