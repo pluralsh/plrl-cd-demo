@@ -46,6 +46,11 @@ def world():
     return {"world": "hello!"}
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.get("/user")
 def user():
     return {"user:": "bob"}
