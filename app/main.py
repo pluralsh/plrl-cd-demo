@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 import prometheus_client as prom
-import time
 import os
 
 from .database import init_db, get_db, Item, POSTGRES_URL
@@ -16,6 +15,8 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 init_db()
+
+PING_FAILURE_ENABLED = os.environ.get("PING_FAILURE_ENABLED", "false").lower() in {"1", "true", "yes", "on"}
 
 
 class ItemPayload(BaseModel):
@@ -31,7 +32,7 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if PING_FAILURE_ENABLED:
         raise Exception("unknown internal error")
     return {"pong": True}
 
