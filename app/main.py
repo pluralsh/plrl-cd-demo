@@ -18,6 +18,16 @@ prom.start_http_server(9090)
 init_db()
 
 
+def get_ping_failure_rate() -> float:
+    """Return the opt-in failure rate for the demo /ping chaos path."""
+    value = os.environ.get("CHAOS_PING_FAILURE_RATE", "0")
+    try:
+        rate = float(value)
+    except ValueError:
+        return 0.0
+    return max(0.0, min(rate, 1.0))
+
+
 class ItemPayload(BaseModel):
     name: str
     description: Optional[str] = None
@@ -31,7 +41,10 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    # This intentionally supports demo chaos testing, but it must be explicitly
+    # enabled so the default production behavior stays healthy and does not fire
+    # alerts from synthetic 500s.
+    if get_ping_failure_rate() > 0 and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
