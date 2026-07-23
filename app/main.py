@@ -29,11 +29,20 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def should_trigger_fault() -> bool:
+    return int(time.time()) % 3 == 0
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
     return {"pong": True}
+
+
+@app.get("/fault")
+def fault():
+    if should_trigger_fault():
+        raise Exception("unknown internal error")
+    return {"fault": False}
 
 
 @app.get("/hello")
