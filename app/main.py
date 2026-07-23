@@ -17,6 +17,8 @@ prom.start_http_server(9090)
 
 init_db()
 
+PING_FAULT_INJECTION_ENV = "PING_FAULT_INJECTION"
+
 
 class ItemPayload(BaseModel):
     name: str
@@ -31,8 +33,11 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    fault_injection_enabled = os.environ.get(PING_FAULT_INJECTION_ENV, "").lower() == "true"
+
+    if fault_injection_enabled and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
+
     return {"pong": True}
 
 
