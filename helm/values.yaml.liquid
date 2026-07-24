@@ -15,3 +15,6 @@ ingress:
   - secretName: cd-demo-tls
     hosts:
       - cd-demo-{{ cluster.handle }}.{{ cluster.metadata.dns_zone }}
+
+pingChaos:
+  enabled: false

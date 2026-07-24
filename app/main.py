@@ -17,6 +17,8 @@ prom.start_http_server(9090)
 
 init_db()
 
+PING_CHAOS_ENABLED = os.environ.get("PING_CHAOS_ENABLED", "false").lower() == "true"
+
 
 class ItemPayload(BaseModel):
     name: str
@@ -31,7 +33,7 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if PING_CHAOS_ENABLED and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
