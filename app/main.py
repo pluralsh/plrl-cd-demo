@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 import prometheus_client as prom
-import time
 import os
 
 from .database import init_db, get_db, Item, POSTGRES_URL
@@ -31,8 +30,7 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
+    # This endpoint previously included intentional demo flakiness; keep it healthy by default.
     return {"pong": True}
 
 
