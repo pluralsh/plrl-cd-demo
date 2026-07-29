@@ -17,10 +17,14 @@ prom.start_http_server(9090)
 
 init_db()
 
+PING_FAILURE_MODE_ENV = "PING_FAILURE_MODE"
+PING_FAILURE_MODE_TIME_BASED = "time-based"
+
 
 class ItemPayload(BaseModel):
     name: str
     description: Optional[str] = None
+
 
 
 def db_required(db: Session = Depends(get_db)):
@@ -31,7 +35,7 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if os.environ.get(PING_FAILURE_MODE_ENV) == PING_FAILURE_MODE_TIME_BASED and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
