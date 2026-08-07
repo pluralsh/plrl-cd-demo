@@ -1,13 +1,14 @@
 # Plural CD Demo Application
 
-This is meant to be a simple demo microservice which can be managed by Plural.  It builds a single docker image, published to `ghcr.io/pluralsh/plrl-cd-test` and exposes a small flask api and prometheus metrics.
+This is a simple FastAPI demo microservice that can be managed by Plural. It builds a single Docker image published to `ghcr.io/pluralsh/plrl-cd-test` and exposes a small API and Prometheus metrics.
 
-This can then be deployed easily within the context of a Plural Flow, or whatever other means you'd want to test against.
+It can be deployed within a Plural Flow or by other means for testing.
 
+## Endpoints
 
-## Alerting and AI Driven fixes
+- `GET /ping` is a reliable ping endpoint. It always returns HTTP 200 with `{"pong": true}`.
+- `GET /test/faults/ping` is an explicit fault-injection endpoint for alerting and RCA demonstrations. When the integer Unix timestamp is divisible by three, it intentionally raises an error and returns HTTP 500; at all other timestamps it returns HTTP 200 with `{"pong": true}`. This produces a deterministic failure during one out of every three one-second intervals. Do not use this endpoint for health checks or ordinary pingers.
 
-Within `app/main.py` we've created a deliberaly broken endpoint `/ping`.  If log aggregation, and even better, vector indexing of PRs is enabled, you can tie a prometheus or datadog alert directly to a full root cause using Plural AI, and it will even spawn a PR to fix the broken code change.
+## Alerting and AI-driven fixes
 
-An example fix PR we generated is here: https://github.com/pluralsh/plrl-cd-demo/pull/5.  This was actually a one-shot (you can verify in the PR history of the repo).
-
+The explicit fault-injection endpoint supports demonstrations in which log aggregation, vector indexing of PRs, and Prometheus or Datadog alerts can be tied to a root-cause analysis using Plural AI. It is intentionally isolated from the ordinary `/ping` endpoint so application health and routine Flow pingers remain reliable.

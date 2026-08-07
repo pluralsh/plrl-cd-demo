@@ -30,7 +30,12 @@ def db_required(db: Session = Depends(get_db)):
 
 
 @app.get("/ping")
-def test():
+def ping():
+    return {"pong": True}
+
+
+@app.get("/test/faults/ping")
+def synthetic_ping_fault():
     if int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
