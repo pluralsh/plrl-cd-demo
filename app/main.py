@@ -30,10 +30,18 @@ def db_required(db: Session = Depends(get_db)):
 
 
 @app.get("/ping")
-def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
+def ping():
     return {"pong": True}
+
+
+@app.get(
+    "/test/error",
+    summary="Generate a demo-only internal server error",
+    description="Test/demo-only endpoint that intentionally returns HTTP 500 for controlled alert demonstrations.",
+    include_in_schema=False,
+)
+def demo_error():
+    raise RuntimeError("intentional demo error")
 
 
 @app.get("/hello")
