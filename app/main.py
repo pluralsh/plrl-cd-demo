@@ -30,10 +30,16 @@ def db_required(db: Session = Depends(get_db)):
 
 
 @app.get("/ping")
-def test():
+def ping():
+    return {"pong": True}
+
+
+@app.get("/test-error")
+def test_error():
+    """Deliberately fail periodically for alerting and RCA demonstrations."""
     if int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
-    return {"pong": True}
+    return {"error_injection": "not triggered"}
 
 
 @app.get("/hello")
