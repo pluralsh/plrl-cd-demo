@@ -30,8 +30,9 @@ def db_required(db: Session = Depends(get_db)):
 
 
 @app.get("/ping")
-def test():
-    if int(time.time()) % 3 == 0:
+def ping():
+    # Keep the intentional error path available only for explicit fault testing.
+    if os.environ.get("PING_FAULT_INJECTION") == "true" and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
