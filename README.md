@@ -1,13 +1,27 @@
 # Plural CD Demo Application
 
-This is meant to be a simple demo microservice which can be managed by Plural.  It builds a single docker image, published to `ghcr.io/pluralsh/plrl-cd-test` and exposes a small flask api and prometheus metrics.
+This is a simple demo microservice that can be managed by Plural. It builds a single Docker image, published to `ghcr.io/pluralsh/plrl-cd-test`, and exposes a small FastAPI API and Prometheus metrics.
 
-This can then be deployed easily within the context of a Plural Flow, or whatever other means you'd want to test against.
+It can be deployed within a Plural Flow or by any other mechanism used for testing.
 
+## `/ping` and synthetic fault injection
 
-## Alerting and AI Driven fixes
+`GET /ping` normally returns:
 
-Within `app/main.py` we've created a deliberaly broken endpoint `/ping`.  If log aggregation, and even better, vector indexing of PRs is enabled, you can tie a prometheus or datadog alert directly to a full root cause using Plural AI, and it will even spawn a PR to fix the broken code change.
+```json
+{"pong": true}
+```
 
-An example fix PR we generated is here: https://github.com/pluralsh/plrl-cd-demo/pull/5.  This was actually a one-shot (you can verify in the PR history of the repo).
+The endpoint is safe by default. The synthetic fault used for Flow and alerting demonstrations is disabled unless `PING_FAULT_INJECTION=true` is set (the value is parsed case-insensitively). With that explicit opt-in, `/ping` intentionally raises `unknown internal error` during Unix epoch seconds divisible by three, producing a 500 response; it succeeds during all other seconds. This is intended only for synthetic/demo alerting scenarios, not normal deployed availability testing.
 
+The included Helm application chart exposes the same setting as `pingFaultInjection`, which defaults to `false` and renders `PING_FAULT_INJECTION=false`. Enable it only for a demo:
+
+```yaml
+pingFaultInjection: true
+```
+
+## Alerting and AI-driven fixes
+
+The optional `/ping` fault injection can be used with log aggregation and, ideally, vector indexing of pull requests to connect a Prometheus or Datadog alert to a root cause using Plural AI. It can then spawn a pull request to fix the generated fault.
+
+An example generated fix PR is available at https://github.com/pluralsh/plrl-cd-demo/pull/5. It was a one-shot; this can be verified in the repository pull request history.

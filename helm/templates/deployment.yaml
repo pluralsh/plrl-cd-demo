@@ -36,6 +36,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PING_FAULT_INJECTION
+              value: {{ ternary "true" "false" .Values.pingFaultInjection | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
