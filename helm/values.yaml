@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+# Enables the synthetic /ping fault used by Flow alert demos. Disabled by default.
+pingFaultInjection: false
+
 image:
   repository: ghcr.io/pluralsh/plrl-cd-test
   pullPolicy: IfNotPresent
