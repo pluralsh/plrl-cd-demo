@@ -31,7 +31,8 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    chaos_testing_enabled = os.environ.get("ENABLE_CHAOS_TESTING", "").lower() == "true"
+    if chaos_testing_enabled and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
