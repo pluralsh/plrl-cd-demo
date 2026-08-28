@@ -5,8 +5,8 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 import prometheus_client as prom
-import time
 import os
+from threading import Lock
 
 from .database import init_db, get_db, Item, POSTGRES_URL
 
@@ -16,6 +16,12 @@ Instrumentator().instrument(app)
 prom.start_http_server(9090)
 
 init_db()
+
+PING_FAULT_INJECTION_EVERY_N_REQUESTS = int(
+    os.environ.get("PING_FAULT_INJECTION_EVERY_N_REQUESTS", "0")
+)
+_ping_request_count = 0
+_ping_request_lock = Lock()
 
 
 class ItemPayload(BaseModel):
@@ -29,9 +35,20 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def should_inject_ping_fault():
+    global _ping_request_count
+
+    if PING_FAULT_INJECTION_EVERY_N_REQUESTS < 1:
+        return False
+
+    with _ping_request_lock:
+        _ping_request_count += 1
+        return _ping_request_count % PING_FAULT_INJECTION_EVERY_N_REQUESTS == 0
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if should_inject_ping_fault():
         raise Exception("unknown internal error")
     return {"pong": True}
 
