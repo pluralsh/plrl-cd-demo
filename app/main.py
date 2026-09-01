@@ -29,10 +29,21 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+PING_FAULT_INJECTION_ENABLED = "PING_FAULT_INJECTION_ENABLED"
+TRUTHY_ENV_VALUES = {"1", "true", "yes", "on"}
+
+
+def ping_fault_injection_enabled():
+    value = os.getenv(PING_FAULT_INJECTION_ENABLED, "")
+    return value.strip().lower() in TRUTHY_ENV_VALUES
+
+
 @app.get("/ping")
-def test():
-    if int(time.time()) % 3 == 0:
-        raise Exception("unknown internal error")
+def ping():
+    if ping_fault_injection_enabled() and int(time.time()) % 3 == 0:
+        raise HTTPException(
+            status_code=500, detail="demo ping fault injection enabled"
+        )
     return {"pong": True}
 
 
