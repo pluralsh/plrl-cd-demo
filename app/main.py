@@ -29,9 +29,13 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def ping_fault_injection_enabled():
+    return os.environ.get("PING_FAULT_INJECTION", "").lower() == "true"
+
+
 @app.get("/ping")
-def test():
-    if int(time.time()) % 3 == 0:
+def ping():
+    if ping_fault_injection_enabled() and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
