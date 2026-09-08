@@ -5,10 +5,11 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 import prometheus_client as prom
-import time
 import os
 
 from .database import init_db, get_db, Item, POSTGRES_URL
+
+PING_FAULT_INJECTION_ENV = "PING_FAULT_INJECTION"
 
 app = FastAPI()
 Instrumentator().instrument(app)
@@ -29,9 +30,13 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def ping_fault_injection_enabled():
+    return os.environ.get(PING_FAULT_INJECTION_ENV, "").lower() == "true"
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if ping_fault_injection_enabled():
         raise Exception("unknown internal error")
     return {"pong": True}
 
