@@ -1,13 +1,13 @@
 # Plural CD Demo Application
 
-This is meant to be a simple demo microservice which can be managed by Plural.  It builds a single docker image, published to `ghcr.io/pluralsh/plrl-cd-test` and exposes a small flask api and prometheus metrics.
+This is a simple FastAPI demo microservice that can be managed by Plural. It builds a single Docker image, published to `ghcr.io/pluralsh/plrl-cd-test`, and exposes a small API and Prometheus metrics.
 
-This can then be deployed easily within the context of a Plural Flow, or whatever other means you'd want to test against.
+It can be deployed within the context of a Plural Flow, or by any other means you want to test.
 
+## Alerting and AI-driven fixes
 
-## Alerting and AI Driven fixes
+`/ping` is safe to use for normal traffic and health monitoring: by default it always responds with `200 {"pong": true}`.
 
-Within `app/main.py` we've created a deliberaly broken endpoint `/ping`.  If log aggregation, and even better, vector indexing of PRs is enabled, you can tie a prometheus or datadog alert directly to a full root cause using Plural AI, and it will even spawn a PR to fix the broken code change.
+To deliberately exercise an HTTP 500 alert, explicitly set the `PING_FAULT_INJECTION` environment variable to `true` on the application container. While enabled, every `/ping` request raises `Exception("unknown internal error")` and returns 500. Leave this variable unset (the default) for normal deployments.
 
-An example fix PR we generated is here: https://github.com/pluralsh/plrl-cd-demo/pull/5.  This was actually a one-shot (you can verify in the PR history of the repo).
-
+An example AI-generated fix PR is available at https://github.com/pluralsh/plrl-cd-demo/pull/5.
