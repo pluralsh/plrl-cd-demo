@@ -13,6 +13,8 @@ from .database import init_db, get_db, Item, POSTGRES_URL
 app = FastAPI()
 Instrumentator().instrument(app)
 
+PING_FAILURE_ENABLED_ENV = "PING_FAILURE_ENABLED"
+
 prom.start_http_server(9090)
 
 init_db()
@@ -31,7 +33,10 @@ def db_required(db: Session = Depends(get_db)):
 
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if (
+        os.environ.get(PING_FAILURE_ENABLED_ENV, "").lower() == "true"
+        and int(time.time()) % 3 == 0
+    ):
         raise Exception("unknown internal error")
     return {"pong": True}
 
