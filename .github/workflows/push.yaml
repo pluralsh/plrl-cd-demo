@@ -32,6 +32,8 @@ jobs:
       run: |
         pip install pytest
         pytest
+    - name: Verify /ping over the container HTTP endpoint
+      run: ./scripts/test-ping-endpoint.sh
   publish-docker:
     name: Build and Push fastapi container
     needs: test
