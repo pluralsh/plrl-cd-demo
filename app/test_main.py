@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
 
 from .main import app
@@ -10,6 +12,7 @@ def test_read_root():
 
 
 def test_ping():
-    response = client.get("/ping")
+    with patch("time.time", return_value=3):
+        response = client.get("/ping")
     assert response.status_code == 200
     assert response.json() == {"pong": True}
