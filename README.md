@@ -4,6 +4,10 @@ This is meant to be a simple demo microservice which can be managed by Plural.  
 
 This can then be deployed easily within the context of a Plural Flow, or whatever other means you'd want to test against.
 
+## `/ping` endpoint contract
+
+`GET /ping` returns HTTP 200 with JSON `{"pong": true}` and must not intentionally emit periodic 5xx responses.
+
 
 ## Alerting and AI Driven fixes
 
