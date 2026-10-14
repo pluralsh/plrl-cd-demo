@@ -29,9 +29,14 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def ping_failure_injection_enabled() -> bool:
+    """Return whether synthetic /ping failures were explicitly enabled."""
+    return os.environ.get("PING_FAIL_ENABLED", "false").lower() in {"1", "true", "yes"}
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if ping_failure_injection_enabled() and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
