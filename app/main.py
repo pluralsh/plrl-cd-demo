@@ -10,6 +10,9 @@ import os
 
 from .database import init_db, get_db, Item, POSTGRES_URL
 
+PING_FAULT_INJECTION_ENV = "PING_FAULT_INJECTION"
+_TRUE_VALUES = {"1", "true", "yes", "on"}
+
 app = FastAPI()
 Instrumentator().instrument(app)
 
@@ -29,9 +32,15 @@ def db_required(db: Session = Depends(get_db)):
     return db
 
 
+def ping_fault_injection_enabled():
+    """Return whether the optional /ping demo fault is explicitly enabled."""
+    value = os.environ.get(PING_FAULT_INJECTION_ENV, "")
+    return value.strip().lower() in _TRUE_VALUES
+
+
 @app.get("/ping")
 def test():
-    if int(time.time()) % 3 == 0:
+    if ping_fault_injection_enabled() and int(time.time()) % 3 == 0:
         raise Exception("unknown internal error")
     return {"pong": True}
 
