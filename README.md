@@ -5,9 +5,8 @@ This is meant to be a simple demo microservice which can be managed by Plural.  
 This can then be deployed easily within the context of a Plural Flow, or whatever other means you'd want to test against.
 
 
-## Alerting and AI Driven fixes
+## `/ping` behavior
 
-Within `app/main.py` we've created a deliberaly broken endpoint `/ping`.  If log aggregation, and even better, vector indexing of PRs is enabled, you can tie a prometheus or datadog alert directly to a full root cause using Plural AI, and it will even spawn a PR to fix the broken code change.
+`GET /ping` returns `200 {"pong": true}` by default and is safe for continuous health checking.
 
-An example fix PR we generated is here: https://github.com/pluralsh/plrl-cd-demo/pull/5.  This was actually a one-shot (you can verify in the PR history of the repo).
-
+For deterministic test-only failure simulation, set `PING_FAULT_INJECTION=true`. With that exact value, every `/ping` request returns HTTP 500 with a synthetic-fault response. Unset or any other value leaves fault injection disabled.
