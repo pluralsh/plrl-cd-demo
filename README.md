@@ -7,7 +7,7 @@ This can then be deployed easily within the context of a Plural Flow, or whateve
 
 ## Alerting and AI Driven fixes
 
-Within `app/main.py` we've created a deliberaly broken endpoint `/ping`.  If log aggregation, and even better, vector indexing of PRs is enabled, you can tie a prometheus or datadog alert directly to a full root cause using Plural AI, and it will even spawn a PR to fix the broken code change.
+The `/ping` endpoint succeeds by default. To intentionally exercise the alerting and AI-driven remediation workflow, set `PING_FAILURE_ENABLED=true`. With this explicitly opt-in setting, `/ping` returns an internal error for roughly one out of every three seconds; leave it unset in normal deployments.
 
-An example fix PR we generated is here: https://github.com/pluralsh/plrl-cd-demo/pull/5.  This was actually a one-shot (you can verify in the PR history of the repo).
+If log aggregation and vector indexing of PRs are enabled, you can tie a Prometheus or Datadog alert directly to a full root cause using Plural AI, which can then spawn a remediation PR.
 
