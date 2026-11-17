@@ -1,3 +1,5 @@
+import time
+
 from fastapi.testclient import TestClient
 
 from .main import app
@@ -7,3 +9,14 @@ client = TestClient(app)
 def test_read_root():
     response = client.get("/")
     assert response.status_code == 200
+
+
+def test_ping_succeeds_during_formerly_failing_epoch_second(monkeypatch):
+    formerly_failing_second = 1_700_000_001
+    assert formerly_failing_second % 3 == 0
+    monkeypatch.setattr(time, "time", lambda: formerly_failing_second)
+
+    response = client.get("/ping")
+
+    assert response.status_code == 200
+    assert response.json() == {"pong": True}
